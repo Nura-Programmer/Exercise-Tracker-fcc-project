@@ -1,13 +1,90 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Exercise Tracker fcc project</title>
-  <link rel="stylesheet" href="style.css">
-</head>
-<body>
-  <h1>Exercise-Tracker-fcc-project</h1>
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <base href="/" />
+    <title>FCC Project | Exercise Tracker</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <main class="flex f-column">
+      <h1>Exercise Tracker</h1>
+      <div class="container">
+        <h2>Create a New User</h2>
+        <code>POST /api/users</code>
+        <form action="/api/users" method="post" class="flex">
+          <input
+            type="text"
+            name="username"
+            placeholder="Enter username"
+            required
+          />
+          <input type="submit" value="Create account" />
+        </form>
+      </div>
+      <div class="container">
+        <h2>Add Exercises</h2>
+        <code>POST /api/users/:_id/exercises</code>
+        <form id="exerciseForm" method="post" class="flex f-column">
+          <input
+            type="text"
+            id="userId"
+            name="userId"
+            placeholder="user ID*"
+            required
+          />
+          <input
+            type="text"
+            name="description"
+            placeholder="description*"
+            required
+          />
+          <input
+            type="number"
+            name="duration"
+            placeholder="duration* (mins)"
+            required
+          />
+          <input type="date" name="date" placeholder="date (yyyy-mm-dd)" />
+          <input type="submit" value="Create account" />
+        </form>
+      </div>
+      <div class="container" id="api-usage">
+        <h2>API Usage</h2>
+        <p>
+          GET user's exercise log:<br />
+          <code>GET /api/users/:_id/logs?[from][&to][&limit]</code>
+        </p>
+        <p>
+          <code> [ ] </code>
+          = optional
+        </p>
+        <p>
+          <code>
+            <em>from, to</em> = dates (yyyy-mm-dd); <em>limit </em> = number
+          </code>
+        </p>
+      </div>
+      <div class="container" id="author">
+        Design and Coded By:
+        <a href="https://www.freecodecamp.org/nuraprogrammer"
+          >Nura Programmer</a
+        >
+      </div>
+    </main>
+  </body>
+  <script>
+    window.onload = function () {
+      const formElem = document.getElementById('exerciseForm');
+
+      formElem.addEventListener('submit', function () {
+        const userId = document.getElementById('userId').value;
+        formElem.action = `/api/users/${userId}/exercises`;
+
+        formElem.submit();
+      });
+    };
+  </script>
 </html>
