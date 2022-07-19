@@ -76,7 +76,7 @@ router.get('/:id', (req, res) => {
 
 router.get('/:id/logs', (req, res) => {
   const { id } = req.params;
-  const { form, to, limit } = req.query;
+  const { from, to, limit } = req.query;
 
   res.json({
     _id: req.params.id,
