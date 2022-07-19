@@ -5,7 +5,10 @@ const usersSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  count: Number,
+  count: {
+    type: Number,
+    default: 0,
+  },
   log: [
     {
       description: String,
