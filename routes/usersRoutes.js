@@ -4,9 +4,18 @@ const router = express();
 const { Users } = require('../models');
 
 router.get('/', (req, res) => {
-  res.json({
-    users: ['list of users'],
-  });
+  Users.find()
+    .then((_users) => {
+      console.log(_users);
+
+      res.json({
+        users: _users.map(({ _id, username }) => ({ _id, username })),
+      });
+    })
+    .catch((err) => {
+      console.error(err);
+      res.json({ error: err });
+    });
 });
 
 router.post('/', (req, res) => {
@@ -39,10 +48,30 @@ router.post('/', (req, res) => {
 
 router.get('/:id', (req, res) => {
   const { id } = req.params;
+  const validIdRegEx = new RegExp(/^[a-f\d]{24}$/i);
 
-  res.json({
-    _id: req.params.id,
-  });
+  if (!validIdRegEx.test(id)) {
+    console.error('invalid id');
+    return res.json({ error: 'invalid id' });
+  }
+
+  Users.findById(id)
+    .then((_user) => {
+      if (_user === null) {
+        console.error('user not found');
+
+        return res.json({ error: 'user not found' });
+      }
+
+      console.log(_user);
+
+      res.json({ username: _user.username, _id: _user._id });
+    })
+    .catch((err) => {
+      console.error(err);
+
+      res.json({ error: err });
+    });
 });
 
 router.get('/:id/logs', (req, res) => {
