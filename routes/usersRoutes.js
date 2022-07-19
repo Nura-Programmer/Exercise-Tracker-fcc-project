@@ -3,6 +3,8 @@ const router = express();
 
 const { Users } = require('../models');
 
+const validIdRegEx = new RegExp(/^[a-f\d]{24}$/i);
+
 router.get('/', (req, res) => {
   Users.find()
     .then((_users) => {
@@ -48,7 +50,6 @@ router.post('/', (req, res) => {
 
 router.get('/:id', (req, res) => {
   const { id } = req.params;
-  const validIdRegEx = new RegExp(/^[a-f\d]{24}$/i);
 
   if (!validIdRegEx.test(id)) {
     console.error('invalid id');
@@ -93,10 +94,53 @@ router.get('/:id/exercises', (req, res) => {
 
 router.post('/:id/exercises', (req, res) => {
   const { id } = req.params;
+  const { date, description, duration } = req.body;
 
-  res.json({
-    _id: req.params.id,
-  });
+  let exerciseDate;
+
+  if (!validIdRegEx.test(id)) {
+    console.error('invalid id');
+    return res.json({ error: 'invalid id' });
+  }
+
+  if (date !== '') {
+    exerciseDate = new Date(date).toDateString();
+
+    if (exerciseDate == 'Invalid Date') {
+      console.error(exerciseDate);
+      return res.json({ error: exerciseDate });
+    }
+  }
+
+  const newExercise = {
+    description,
+    duration: parseInt(duration),
+    date: date === '' ? new Date().toDateString() : exerciseDate,
+  };
+
+  Users.findByIdAndUpdate(id, { $push: { log: newExercise } }, { new: true })
+    .then((_user) => {
+      if (_user === null) {
+        console.error('user not found');
+
+        return res.json({ error: 'user not found' });
+      }
+
+      const responseObj = {
+        _id: _user._id,
+        username: _user.username,
+        ...newExercise,
+      };
+
+      console.log(responseObj);
+
+      res.json(responseObj);
+    })
+    .catch((err) => {
+      console.error(err);
+
+      res.json({ error: err });
+    });
 });
 
 module.exports = router;
