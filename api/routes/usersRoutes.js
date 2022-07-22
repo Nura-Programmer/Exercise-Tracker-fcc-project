@@ -5,7 +5,7 @@ const { Users } = require('../models');
 
 const validIdRegEx = new RegExp(/^[a-f\d]{24}$/i);
 
-const theDate = (date) => new Date(date);
+const theDate = (date) => new Date(new Date(date).toUTCString());
 
 router.get('/', (req, res) => {
   Users.find()
@@ -150,19 +150,19 @@ router.post('/:id/exercises', (req, res) => {
     return res.json({ error: 'invalid id' });
   }
 
-  if (date !== '') {
-    exerciseDate = new Date(date).toDateString();
+  exerciseDate = (
+    date === '' || date === undefined ? new Date() : theDate(date)
+  ).toDateString();
 
-    if (exerciseDate == 'Invalid Date') {
-      console.error(exerciseDate);
-      return res.json({ error: exerciseDate });
-    }
+  if (exerciseDate === 'Invalid Date') {
+    console.error(exerciseDate);
+    return res.json({ error: exerciseDate });
   }
 
   const newExercise = {
     description,
     duration: parseInt(duration),
-    date: date === '' ? new Date().toDateString() : exerciseDate,
+    date: exerciseDate,
   };
 
   Users.findByIdAndUpdate(
